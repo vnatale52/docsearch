@@ -1,0 +1,5 @@
+{
+  "name": "DocSearch Pro v4.0",
+  "description": "A professional document search and analysis tool with Gemini-powered metadata extraction, advanced regex support, and multi-format reporting (CSV, PDF, Word).",
+  "requestFramePermissions": []
+}

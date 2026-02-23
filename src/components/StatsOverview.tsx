@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BarChart3, AlertCircle, Files, Search, PieChart as PieChartIcon } from 'lucide-react';
+import { BarChart3, AlertCircle, Files, Search, PieChart as PieChartIcon, FileSearch } from 'lucide-react';
 import { SearchStats } from '../types';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 
@@ -19,12 +19,19 @@ const StatsOverview: React.FC<StatsOverviewProps> = ({ stats, isDarkMode }) => {
   const termData = Object.entries(stats.termsCount).map(([name, value]) => ({ name, value }));
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
       <StatCard 
-        title="Archivos" 
+        title="ARCHIVOS LEIDOS" 
         value={stats.totalFiles} 
         icon={<Files className="w-5 h-5" />} 
         color="from-indigo-500 to-indigo-600" 
+        isDarkMode={isDarkMode}
+      />
+      <StatCard 
+        title="Procesados OCR" 
+        value={stats.ocrFilesCount} 
+        icon={<FileSearch className="w-5 h-5" />} 
+        color="from-blue-500 to-blue-600" 
         isDarkMode={isDarkMode}
       />
       <StatCard 
@@ -49,7 +56,7 @@ const StatsOverview: React.FC<StatsOverviewProps> = ({ stats, isDarkMode }) => {
         isDarkMode={isDarkMode}
       />
 
-      <div className={`md:col-span-2 p-8 rounded-3xl border shadow-xl transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
+      <div className={`lg:col-span-2 sm:col-span-2 p-8 rounded-3xl border shadow-xl transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
         <div className="flex items-center justify-between mb-8">
           <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
             <PieChartIcon className="w-4 h-4 text-indigo-500" /> Distribución por Extensión
@@ -92,7 +99,7 @@ const StatsOverview: React.FC<StatsOverviewProps> = ({ stats, isDarkMode }) => {
         </div>
       </div>
 
-      <div className={`md:col-span-2 p-8 rounded-3xl border shadow-xl transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
+      <div className={`lg:col-span-3 sm:col-span-2 p-8 rounded-3xl border shadow-xl transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
         <div className="flex items-center justify-between mb-8">
           <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
             <BarChart3 className="w-4 h-4 text-emerald-500" /> Ocurrencias por Término
@@ -134,7 +141,7 @@ const StatsOverview: React.FC<StatsOverviewProps> = ({ stats, isDarkMode }) => {
       </div>
       
       {stats.errors.length > 0 && (
-        <div className="md:col-span-4 p-6 bg-rose-500/10 border border-rose-500/20 rounded-3xl backdrop-blur-sm">
+        <div className="lg:col-span-5 sm:col-span-2 p-6 bg-rose-500/10 border border-rose-500/20 rounded-3xl backdrop-blur-sm">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-rose-500 text-white rounded-lg shadow-lg shadow-rose-500/20">
               <AlertCircle className="w-5 h-5" />

@@ -5,6 +5,7 @@ export interface SearchResult {
   matchedText: string; // Store the actual text found (important for Regex)
   context: string;
   page?: number;
+  secondaryMatches: { term: string; matchedText: string }[];
 }
 
 export interface FileData {
@@ -14,6 +15,7 @@ export interface FileData {
   status: 'pending' | 'processing' | 'completed' | 'error';
   error?: string;
   matches: SearchResult[];
+  ocrApplied?: boolean;
   metadata: {
     fechaEmision?: string;
     resolucionNro?: string;
@@ -28,4 +30,5 @@ export interface SearchStats {
   totalTerms: number;
   termsCount: Record<string, number>;
   errors: string[];
+  ocrFilesCount: number;
 }

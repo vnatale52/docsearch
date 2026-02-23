@@ -1,10 +1,11 @@
 
 import { FileData, SearchResult, SearchStats } from '../types';
+import { createWorker } from 'tesseract.js';
 
 declare const pdfjsLib: any;
 declare const mammoth: any;
 
-const extractText = async (file: File): Promise<{ text: string; pages?: string[] }> => {
+const extractText = async (file: File, enableOCR: boolean): Promise<{ text: string; pages?: string[]; ocrApplied?: boolean }> => {
   const extension = file.name.split('.').pop()?.toLowerCase();
   const arrayBuffer = await file.arrayBuffer();
 
@@ -14,15 +15,54 @@ const extractText = async (file: File): Promise<{ text: string; pages?: string[]
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
         let fullText = '';
         let pages: string[] = [];
+        let isScanned = true;
+        let ocrWasApplied = false;
+
         for (let i = 1; i <= pdf.numPages; i++) {
           const page = await pdf.getPage(i);
           const textContent = await page.getTextContent();
           const pageText = textContent.items.map((item: any) => item.str).join(' ');
+          
+          if (pageText.trim()) {
+            isScanned = false;
+          }
+          
           fullText += pageText + '\n';
           pages.push(pageText);
         }
-        if (!fullText.trim()) throw new Error("Error, su contenido no es texto leíble (posible PDF escaneado sin OCR)");
-        return { text: fullText, pages };
+
+        if (isScanned && enableOCR) {
+          fullText = '';
+          pages = [];
+          ocrWasApplied = true;
+          const worker = await createWorker('spa');
+          
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const viewport = page.getViewport({ scale: 2.0 });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            if (!context) continue;
+            
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            await page.render({ canvasContext: context, viewport }).promise;
+            const { data: { text } } = await worker.recognize(canvas);
+            fullText += text + '\n';
+            pages.push(text);
+          }
+          await worker.terminate();
+        }
+
+        if (!fullText.trim()) {
+          if (enableOCR) {
+             throw new Error("Error: No se pudo extraer texto incluso con OCR.");
+          } else {
+             throw new Error("Error, su contenido no es texto leíble (posible PDF escaneado sin OCR)");
+          }
+        }
+        return { text: fullText, pages, ocrApplied: ocrWasApplied };
 
       case 'docx':
         const result = await mammoth.extractRawText({ arrayBuffer });
@@ -86,7 +126,8 @@ export const processFiles = async (
   files: FileData[], 
   terms: string[], 
   useRegex: boolean, 
-  contextChars: number
+  contextChars: number,
+  enableOCR: boolean
 ): Promise<{ updatedFiles: FileData[], searchStats: SearchStats }> => {
   const updatedFiles = [...files];
   const stats: SearchStats = {
@@ -94,15 +135,18 @@ export const processFiles = async (
     filesByType: {},
     totalTerms: 0,
     termsCount: {},
-    errors: []
+    errors: [],
+    ocrFilesCount: 0
   };
 
   for (let fileData of updatedFiles) {
     fileData.status = 'processing';
     fileData.error = undefined;
     try {
-      const { text, pages } = await extractText(fileData.file);
+      const { text, pages, ocrApplied } = await extractText(fileData.file, enableOCR);
       fileData.text = text;
+      fileData.ocrApplied = ocrApplied;
+      if (ocrApplied) stats.ocrFilesCount++;
       fileData.metadata.fechaEmision = extractFechaEmision(text.slice(0, 5000));
       
       const ext = fileData.metadata.extension;
@@ -134,17 +178,38 @@ export const processFiles = async (
           let resultSnippet = '';
           if (start > 0) resultSnippet += '[[ELLIPSIS]] ';
 
-          const matchesInSnippet: {start: number, end: number, isTrigger: boolean}[] = [];
+          const matchesInSnippet: {start: number, end: number, isTrigger: boolean, matchedText: string}[] = [];
           combinedRegex.lastIndex = 0;
           let snippetMatch;
           
+          const secondaryMatches: { term: string; matchedText: string }[] = [];
+
           while ((snippetMatch = combinedRegex.exec(snippetText)) !== null) {
             const isExactTrigger = snippetMatch.index === triggerIndexInSnippet;
+            const matchedText = snippetMatch[0];
+            
             matchesInSnippet.push({
               start: snippetMatch.index,
-              end: snippetMatch.index + snippetMatch[0].length,
-              isTrigger: isExactTrigger
+              end: snippetMatch.index + matchedText.length,
+              isTrigger: isExactTrigger,
+              matchedText: matchedText
             });
+
+            if (!isExactTrigger) {
+              // Find which term matched this text
+              let matchingTerm = term; // Fallback
+              for (const t of terms) {
+                const tPattern = new RegExp(useRegex ? t : t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+                if (tPattern.test(matchedText)) {
+                  matchingTerm = t;
+                  break;
+                }
+              }
+              
+              secondaryMatches.push({ term: matchingTerm, matchedText: matchedText });
+              stats.totalTerms++;
+              stats.termsCount[matchingTerm] = (stats.termsCount[matchingTerm] || 0) + 1;
+            }
           }
 
           let currentPos = 0;
@@ -178,7 +243,8 @@ export const processFiles = async (
             term: term,
             matchedText: matchedString,
             context: resultSnippet,
-            page: pageNum
+            page: pageNum,
+            secondaryMatches: secondaryMatches
           });
 
           stats.totalTerms++;

@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { Search, FileText, Download, Trash2, Moon, Sun, AlertCircle, FileSearch, CheckCircle2, BarChart3, Clock, Settings2, ShieldAlert } from 'lucide-react';
+import { Search, FileText, Download, Trash2, Moon, Sun, AlertCircle, FileSearch, CheckCircle2, BarChart3, Clock, Settings2, ShieldAlert, HelpCircle } from 'lucide-react';
 import { FileData, SearchResult, SearchStats } from './types';
 import FileUpload from './components/FileUpload';
 import ResultsTable from './components/ResultsTable';
@@ -12,10 +12,100 @@ const App: React.FC = () => {
   const [files, setFiles] = useState<FileData[]>([]);
   const [searchTerms, setSearchTerms] = useState<string>('\\b(?<![0-9/])0*4\\s*[-/]\\s*2014\\b; sumatoria; banco; bank; leasing');
   const [useRegex, setUseRegex] = useState<boolean>(false);
+  const [enableOCR, setEnableOCR] = useState<boolean>(false);
   const [contextChars, setContextChars] = useState<number>(240);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [stats, setStats] = useState<SearchStats | null>(null);
+  const [currentTime, setCurrentTime] = useState<string>('');
+
+  useEffect(() => {
+    const updateTime = () => {
+      setCurrentTime(new Date().toLocaleString('es-AR', { 
+        timeZone: 'America/Argentina/Buenos_Aires', 
+        hour12: false, 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit' 
+      }));
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const downloadReadme = () => {
+    const readmeContent = `# DocSearch Pro v4.0
+
+DocSearch Pro es una herramienta avanzada de búsqueda y análisis de documentos diseñada para procesar archivos locales (PDF, DOCX, XLSX, TXT) de forma rápida y segura, directamente en el navegador.
+
+## 🚀 Características Principales
+
+- **Búsqueda Multiformato**: Soporte nativo para archivos PDF, Word (.docx), Excel (.xlsx, .xls) y Texto Plano (.txt).
+- **Análisis Inteligente**: Extracción automática de metadatos como la Fecha de Emisión y Número de Resolución.
+- **Búsqueda Avanzada**: Soporte para múltiples términos de búsqueda y expresiones regulares (Regex).
+- **Privacidad Total**: El procesamiento se realiza localmente en el navegador; los documentos nunca se suben a un servidor externo.
+- **Exportación Profesional**: Generación de informes detallados en formatos PDF, Word (Docx) y CSV (Excel).
+- **Interfaz Moderna**: Diseño limpio con soporte para Modo Oscuro y visualización de estadísticas en tiempo real.
+- **OCR Integrado**: Capacidad de procesar PDFs escaneados mediante reconocimiento óptico de caracteres.
+
+## 🔍 Uso de Expresiones Regulares (REGEX)
+
+El sistema permite realizar búsquedas potentes utilizando Regex. Una expresión regular es una secuencia de caracteres que conforma un patrón de búsqueda.
+
+### Ejemplo de Expresión Mixta:
+\`\\b(?<![0-9/])0*4\\s*[-/]\\s*2014\\b; sumatoria; banco; bank; leasing\`
+
+Esta expresión combina un patrón **REGEX** con **términos literales**, separados por punto y coma (\`;\`):
+
+1.  **Patrón REGEX (\`\\b(?<![0-9/])0*4\\s*[-/]\\s*2014\\b\`)**:
+    -   \`\\b\`: Asegura que la coincidencia sea una palabra completa.
+    -   \`(?<![0-9/])\`: (Lookbehind negativo) Evita que el patrón coincida si hay un número o barra antes (ej. evita coincidir en "10/04/2014").
+    -   \`0*4\`: Busca el número 4, permitiendo ceros a la izquierda (ej. "4" o "04").
+    -   \`\\s*[-/]\\s*\`: Busca un guion o una barra inclinada, permitiendo espacios opcionales alrededor.
+    -   \`2014\`: Busca el año 2014.
+    -   *En resumen*: Busca menciones a "04-2014" o "4/2014" que no formen parte de una fecha más larga.
+
+2.  **Términos Literales**: \`sumatoria\`, \`banco\`, \`bank\`, \`leasing\`. Estos se buscan exactamente como están escritos (insensible a mayúsculas).
+
+## 📷 Limitaciones del OCR
+
+El Reconocimiento Óptico de Caracteres (OCR) es una tecnología potente pero dependiente de la calidad de la fuente:
+
+-   **Calidad de Imagen**: Si el documento escaneado tiene baja resolución, ruido digital o manchas, la precisión del texto extraído disminuirá significativamente.
+-   **Gráficos y Tablas**: El OCR puede tener dificultades para interpretar texto dentro de gráficos complejos o tablas con bordes poco definidos.
+-   **Fuentes No Estándar**: Tipografías muy estilizadas o texto manuscrito pueden generar errores de lectura.
+-   **Inclinación**: Documentos escaneados con una inclinación excesiva pueden afectar la detección de líneas de texto.
+
+## 🛠️ Tecnologías Utilizadas
+
+- **Frontend**: React 19 + TypeScript
+- **Build Tool**: Vite 6
+- **Estilos**: Tailwind CSS 4
+- **Iconos**: Lucide React
+- **Procesamiento de Documentos**:
+  - pdf.js para archivos PDF.
+  - mammoth para archivos Word.
+  - xlsx para hojas de cálculo.
+  - tesseract.js para OCR.
+- **Exportación**:
+  - jspdf para informes PDF.
+  - docx para informes Word.
+
+## 📄 Licencia
+
+Este proyecto se encuentra amparado bajo los términos de la licencia MIT.
+`;
+    const blob = new Blob([readmeContent], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'README.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const handleFileUpload = (newFiles: File[]) => {
     const formattedFiles: FileData[] = newFiles.map(f => ({
@@ -42,7 +132,7 @@ const App: React.FC = () => {
     setIsProcessing(true);
     
     const terms = searchTerms.split(';').map(t => t.trim()).filter(t => t);
-    const { updatedFiles, searchStats } = await processFiles(files, terms, useRegex, contextChars);
+    const { updatedFiles, searchStats } = await processFiles(files, terms, useRegex, contextChars, enableOCR);
     
     setFiles(updatedFiles);
     setStats(searchStats);
@@ -64,14 +154,24 @@ const App: React.FC = () => {
             </div>
             <div>
               <h1 className="text-xl font-extrabold tracking-tight">DocSearch <span className="text-indigo-600">Pro</span></h1>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Intelligence Engine v4.0</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">
+                Intelligence Engine v4.0 <span className="ml-6 normal-case font-medium opacity-80">Desarrollado por Vincenzo Natale &nbsp;&nbsp; vnatale52@gmail.com</span>
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-6">
             <div className={`hidden sm:flex items-center gap-2 px-4 py-1.5 rounded-full border text-[11px] font-bold ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-400' : 'bg-slate-50 border-slate-100 text-slate-500'}`}>
               <Clock className="w-3.5 h-3.5 text-indigo-500" />
-              {new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour12: false })}
+              {currentTime}
             </div>
+            <button 
+              onClick={downloadReadme}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all text-[11px] font-bold border ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm'}`}
+              title="Descargar README.md"
+            >
+              <HelpCircle className="w-4 h-4 text-indigo-500" />
+              <span className="hidden sm:inline">Descargar Readme.md</span>
+            </button>
             <button 
               onClick={() => setIsDarkMode(!isDarkMode)}
               className={`p-2.5 rounded-xl transition-all ${isDarkMode ? 'bg-slate-800 text-amber-400 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 shadow-sm'}`}
@@ -86,7 +186,7 @@ const App: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Sidebar de Configuración - Estilizada */}
-          <div className="lg:col-span-2 space-y-6 sticky top-24">
+          <div className="lg:col-span-3 space-y-6 sticky top-24">
             <section className={`p-6 rounded-3xl shadow-xl border overflow-hidden relative ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
               <div className="absolute top-0 left-0 w-1 h-full bg-indigo-600"></div>
               
@@ -119,6 +219,17 @@ const App: React.FC = () => {
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" checked={useRegex} onChange={(e) => setUseRegex(e.target.checked)} className="sr-only peer" />
+                    <div className="w-10 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                  </label>
+                </div>
+
+                <div className={`p-4 rounded-2xl flex items-center justify-between border transition-all ${enableOCR ? 'border-indigo-500 bg-indigo-500/5' : 'border-transparent'}`}>
+                  <div className="flex flex-col">
+                    <span className="text-xs font-black uppercase tracking-tighter">Aplicar OCR</span>
+                    <span className="text-[10px] text-slate-400">PDFs escaneados</span>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked={enableOCR} onChange={(e) => setEnableOCR(e.target.checked)} className="sr-only peer" />
                     <div className="w-10 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
                   </label>
                 </div>
@@ -172,7 +283,7 @@ const App: React.FC = () => {
           </div>
 
           {/* Área de Resultados - Maximizada */}
-          <div className="lg:col-span-10 space-y-8">
+          <div className="lg:col-span-9 space-y-8">
             {stats && <StatsOverview stats={stats} isDarkMode={isDarkMode} />}
             
             <section className={`rounded-3xl shadow-2xl border overflow-hidden transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>

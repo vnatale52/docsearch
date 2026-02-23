@@ -11,12 +11,20 @@ import {
 } from 'docx';
 
 export const exportToCSV = (files: FileData[]) => {
-  const headers = ['Path_Nombre_Archivo', 'Contador_Terminos_Hallados', 'ResolucionNro', 'Fecha_Emision', 'Texto_Visto_Hasta_Considerando', 'Errores_Lectura'];
+  const headers = ['Path_Nombre_Archivo', 'Errores_Lectura', 'OCR_Aplicado', 'Contador_Términos_Hallados', 'Nro_Resolución', 'Fecha_Emisión', 'Texto_Visto_Hasta_Considerando'];
   
   const rows = files.map(f => {
     const matchCounts: Record<string, number> = {};
     f.matches.forEach(m => {
+      // Count the trigger
       matchCounts[m.matchedText] = (matchCounts[m.matchedText] || 0) + 1;
+      
+      // Count secondary matches in context
+      if (m.secondaryMatches) {
+        m.secondaryMatches.forEach(sm => {
+          matchCounts[sm.matchedText] = (matchCounts[sm.matchedText] || 0) + 1;
+        });
+      }
     });
     const counterStr = Object.entries(matchCounts).map(([text, count]) => `${text} : ${count}`).join(' | ');
 
@@ -44,11 +52,12 @@ export const exportToCSV = (files: FileData[]) => {
 
     return [
       csvSafe(hyperlinkFormula),
+      csvSafe(f.error || ''),
+      csvSafe(f.ocrApplied ? 'SÍ' : 'NO'),
       csvSafe(counterStr),
       csvSafe(resolucion.replace(/(\r\n|\n|\r)/gm, " ")),
       csvSafe(f.metadata.fechaEmision || ''),
-      csvSafe(vistoTexto.replace(/(\r\n|\n|\r)/gm, " ")),
-      csvSafe(f.error || '')
+      csvSafe(vistoTexto.replace(/(\r\n|\n|\r)/gm, " "))
     ];
   });
 

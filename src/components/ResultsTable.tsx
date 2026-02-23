@@ -18,7 +18,15 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ files, isDarkMode }) => {
   const getTermBreakdown = (matches: any[]) => {
     const breakdown: Record<string, number> = {};
     matches.forEach(m => {
+      // Count the trigger term
       breakdown[m.term] = (breakdown[m.term] || 0) + 1;
+      
+      // Count secondary matches terms
+      if (m.secondaryMatches) {
+        m.secondaryMatches.forEach((sm: any) => {
+          breakdown[sm.term] = (breakdown[sm.term] || 0) + 1;
+        });
+      }
     });
     return breakdown;
   };
@@ -32,13 +40,15 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ files, isDarkMode }) => {
             <th className="px-6 py-6 min-w-[200px]">Documento</th>
             <th className="px-6 py-6 w-48 text-center">F. Emisión</th>
             <th className="px-6 py-6 w-[450px] text-center">Resumen de Hallazgos</th>
+            <th className="px-6 py-6 w-20 text-center">OCR</th>
             <th className="px-6 py-6 w-28 text-center">Estado</th>
           </tr>
         </thead>
         <tbody className={`divide-y ${isDarkMode ? 'divide-slate-700' : 'divide-slate-100'}`}>
           {files.map((file) => {
             const termBreakdown = getTermBreakdown(file.matches);
-            const hasMatches = file.matches.length > 0;
+            const totalDetected = Object.values(termBreakdown).reduce((a, b) => a + b, 0);
+            const hasMatches = totalDetected > 0;
             
             return (
               <React.Fragment key={file.id}>
@@ -75,23 +85,28 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ files, isDarkMode }) => {
                       <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest italic">N/A</span>
                     )}
                   </td>
-                  <td className="px-6 py-6">
-                    <div className="flex flex-col items-center gap-3">
-                      <div className={`flex items-center gap-2 px-4 py-1 rounded-full text-[10px] font-black tracking-widest transition-all ${hasMatches ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-slate-100 text-slate-400 dark:bg-slate-800'}`}>
-                        {hasMatches ? `DETECTADOS: ${file.matches.length}` : 'SIN HALLAZGOS'}
-                      </div>
-                      {hasMatches && (
-                        <div className="flex flex-wrap justify-center gap-2 max-w-[400px]">
-                          {Object.entries(termBreakdown).map(([term, count], idx) => (
-                            <div key={idx} className={`px-2.5 py-1 rounded-xl text-[10px] font-black border transition-all hover:border-indigo-500 ${isDarkMode ? 'bg-slate-900 border-slate-700 text-slate-300' : 'bg-white border-slate-200 text-slate-600'}`}>
-                              <span className="text-indigo-500">{term}</span> <span className="text-slate-400 font-bold ml-1">×{count}</span>
-                            </div>
-                          ))}
+                    <td className="px-6 py-6">
+                      <div className="flex flex-col items-center gap-3">
+                        <div className={`flex items-center gap-2 px-4 py-1 rounded-full text-[10px] font-black tracking-widest transition-all ${hasMatches ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-slate-100 text-slate-400 dark:bg-slate-800'}`}>
+                          {hasMatches ? `DETECTADOS: ${totalDetected}` : 'SIN HALLAZGOS'}
                         </div>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-6 text-center">
+                        {hasMatches && (
+                          <div className="flex flex-wrap justify-center gap-2 max-w-[400px]">
+                            {Object.entries(termBreakdown).map(([term, count], idx) => (
+                              <div key={idx} className={`px-2.5 py-1 rounded-xl text-[10px] font-black border transition-all hover:border-indigo-500 ${isDarkMode ? 'bg-slate-900 border-slate-700 text-slate-300' : 'bg-white border-slate-200 text-slate-600'}`}>
+                                <span className="text-indigo-500">{term}</span> <span className="text-slate-400 font-bold ml-1">×{count}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-6 text-center">
+                      <span className={`text-[10px] font-black px-3 py-1.5 rounded-full border uppercase tracking-widest ${file.ocrApplied ? (isDarkMode ? 'bg-blue-950/20 border-blue-900 text-blue-400' : 'bg-blue-50 border-blue-100 text-blue-600') : (isDarkMode ? 'bg-slate-900 border-slate-700 text-slate-500' : 'bg-slate-50 border-slate-100 text-slate-400')}`}>
+                        {file.ocrApplied ? 'SÍ' : 'NO'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-6 text-center">
                     <div className="flex justify-center">
                       {file.status === 'completed' && <CheckCircle2 className="w-6 h-6 text-emerald-500" />}
                       {file.status === 'error' && <AlertCircle className="w-6 h-6 text-rose-500" />}
@@ -104,7 +119,7 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ files, isDarkMode }) => {
                 </tr>
                 {expandedFileId === file.id && (
                   <tr className={`transition-all duration-500 ${isDarkMode ? 'bg-slate-900/40' : 'bg-slate-50/40'}`}>
-                    <td colSpan={5} className="px-4 py-8">
+                    <td colSpan={6} className="px-4 py-8">
                       <div className="space-y-6 w-full max-w-[100%] mx-auto">
                         {/* Cabecera Detail Premium */}
                         <div className={`p-6 rounded-3xl border flex items-center justify-between w-full shadow-lg backdrop-blur-sm ${isDarkMode ? 'bg-slate-800/80 border-slate-700' : 'bg-white/80 border-slate-200'}`}>

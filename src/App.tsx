@@ -77,6 +77,14 @@ El Reconocimiento Óptico de Caracteres (OCR) es una tecnología potente pero de
 -   **Fuentes No Estándar**: Tipografías muy estilizadas o texto manuscrito pueden generar errores de lectura.
 -   **Inclinación**: Documentos escaneados con una inclinación excesiva pueden afectar la detección de líneas de texto.
 
+## 🛡️ Tratamiento de Logos y Ruido
+
+La aplicación incluye un sistema de filtrado inteligente para elementos gráficos recurrentes que no forman parte del contenido normativo:
+
+- **Filtrado de Logo "comarb"**: Se ha implementado un tratamiento específico para el logo de la Comisión Arbitral. El sistema detecta y elimina automáticamente cualquier ocurrencia de la palabra "comarb" generada por el motor de OCR o presente en la capa de texto.
+- **Preservación de Continuidad**: Al ignorar estos elementos, el motor de búsqueda asegura que el texto que precede y subsigue al logo se analice como una unidad continua, evitando falsos negativos o fragmentación de hallazgos.
+- **Tratamiento Multicapa**: El logo es ignorado tanto en la extracción de texto nativo (donde es tratado como un objeto gráfico sin valor textual) como en el procesamiento por OCR (donde se aplica un filtro de ruido activo post-reconocimiento).
+
 ## 🛠️ Tecnologías Utilizadas
 
 - **Frontend**: React 19 + TypeScript

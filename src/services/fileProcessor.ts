@@ -143,7 +143,17 @@ export const processFiles = async (
     fileData.status = 'processing';
     fileData.error = undefined;
     try {
-      const { text, pages, ocrApplied } = await extractText(fileData.file, enableOCR);
+      let { text, pages, ocrApplied } = await extractText(fileData.file, enableOCR);
+      
+      // Filtro de ruido: Ignorar el logo "comarb" si es detectado por OCR o texto
+      const noisePatterns = [/comarb/gi];
+      noisePatterns.forEach(pattern => {
+        text = text.replace(pattern, '');
+        if (pages) {
+          pages = pages.map(p => p.replace(pattern, ''));
+        }
+      });
+
       fileData.text = text;
       fileData.ocrApplied = ocrApplied;
       if (ocrApplied) stats.ocrFilesCount++;

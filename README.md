@@ -12,6 +12,42 @@ DocSearch Pro es una herramienta avanzada de búsqueda y análisis de documentos
 - **Interfaz Moderna**: Diseño limpio con soporte para Modo Oscuro y visualización de estadísticas en tiempo real.
 - **OCR Integrado**: Capacidad de procesar PDFs escaneados mediante reconocimiento óptico de caracteres.
 
+## 🔍 Uso de Expresiones Regulares (REGEX)
+
+El sistema permite realizar búsquedas potentes utilizando Regex. Una expresión regular es una secuencia de caracteres que conforma un patrón de búsqueda.
+
+### Ejemplo de Expresión Mixta:
+`\b(?<![0-9/])0*4\s*[-/]\s*2014\b; sumatoria; banco; bank; leasing`
+
+Esta expresión combina un patrón **REGEX** con **términos literales**, separados por punto y coma (`;`):
+
+1.  **Patrón REGEX (`\b(?<![0-9/])0*4\s*[-/]\s*2014\b`)**:
+    -   `\b`: Asegura que la coincidencia sea una palabra completa.
+    -   `(?<![0-9/])`: (Lookbehind negativo) Evita que el patrón coincida si hay un número o barra antes (ej. evita coincidir en "10/04/2014").
+    -   `0*4`: Busca el número 4, permitiendo ceros a la izquierda (ej. "4" o "04").
+    -   `\s*[-/]\s*`: Busca un guion o una barra inclinada, permitiendo espacios opcionales alrededor.
+    -   `2014`: Busca el año 2014.
+    -   *En resumen*: Busca menciones a "04-2014" o "4/2014" que no formen parte de una fecha más larga.
+
+2.  **Términos Literales**: `sumatoria`, `banco`, `bank`, `leasing`. Estos se buscan exactamente como están escritos (insensible a mayúsculas).
+
+## 📷 Limitaciones del OCR
+
+El Reconocimiento Óptico de Caracteres (OCR) es una tecnología potente pero dependiente de la calidad de la fuente:
+
+-   **Calidad de Imagen**: Si el documento escaneado tiene baja resolución, ruido digital o manchas, la precisión del texto extraído disminuirá significativamente.
+-   **Gráficos y Tablas**: El OCR puede tener dificultades para interpretar texto dentro de gráficos complejos o tablas con bordes poco definidos.
+-   **Fuentes No Estándar**: Tipografías muy estilizadas o texto manuscrito pueden generar errores de lectura.
+-   **Inclinación**: Documentos escaneados con una inclinación excesiva pueden afectar la detección de líneas de texto.
+
+## 🛡️ Tratamiento de Logos y Ruido
+
+La aplicación incluye un sistema de filtrado inteligente para elementos gráficos recurrentes que no forman parte del contenido normativo:
+
+- **Filtrado de Logo "comarb"**: Se ha implementado un tratamiento específico para el logo de la Comisión Arbitral. El sistema detecta y elimina automáticamente cualquier ocurrencia de la palabra "comarb" generada por el motor de OCR o presente en la capa de texto.
+- **Preservación de Continuidad**: Al ignorar estos elementos, el motor de búsqueda asegura que el texto que precede y subsigue al logo se analice como una unidad continua, evitando falsos negativos o fragmentación de hallazgos.
+- **Tratamiento Multicapa**: El logo es ignorado tanto en la extracción de texto nativo (donde es tratado como un objeto gráfico sin valor textual) como en el procesamiento por OCR (donde se aplica un filtro de ruido activo post-reconocimiento).
+
 ## 🛠️ Tecnologías Utilizadas
 
 - **Frontend**: React 19 + TypeScript
@@ -19,31 +55,14 @@ DocSearch Pro es una herramienta avanzada de búsqueda y análisis de documentos
 - **Estilos**: Tailwind CSS 4
 - **Iconos**: Lucide React
 - **Procesamiento de Documentos**:
-  - `pdf.js` para archivos PDF.
-  - `mammoth` para archivos Word.
-  - `xlsx` para hojas de cálculo.
-  - `tesseract.js` para OCR.
+  - pdf.js para archivos PDF.
+  - mammoth para archivos Word.
+  - xlsx para hojas de cálculo.
+  - tesseract.js para OCR.
 - **Exportación**:
-  - `jspdf` para informes PDF.
-  - `docx` para informes Word.
-
-## 📂 Estructura del Proyecto
-
-```text
-/
-├── src/
-│   ├── components/      # Componentes UI reutilizables
-│   ├── services/        # Lógica de procesamiento y exportación
-│   ├── types.ts         # Definiciones de tipos TypeScript
-│   ├── App.tsx          # Componente principal
-│   ├── index.tsx        # Punto de entrada de React
-│   └── index.css        # Estilos globales (Tailwind)
-├── public/              # Archivos estáticos
-├── index.html           # Plantilla HTML principal
-├── vite.config.ts       # Configuración de Vite
-└── package.json         # Dependencias y scripts
-```
+  - jspdf para informes PDF.
+  - docx para informes Word.
 
 ## 📄 Licencia
 
-Este proyecto es de uso privado y profesional. Todos los derechos reservados.
+Este proyecto se encuentra amparado bajo los términos de la licencia MIT.

@@ -16,6 +16,13 @@ DocSearch Pro es una herramienta avanzada de búsqueda y análisis de documentos
 
 El sistema permite realizar búsquedas potentes utilizando Regex. Una expresión regular es una secuencia de caracteres que conforma un patrón de búsqueda.
 
+### 🛠️ Herramientas de Ayuda Regex (Novedad v4.0)
+Para facilitar el uso de patrones complejos, la aplicación incluye un **Asistente de Regex** avanzado:
+- **Validador en Tiempo Real**: Análisis instantáneo de la validez del patrón con descripción de errores.
+- **Probador (Sandbox)**: Área de pruebas interactiva para validar patrones contra textos reales antes del procesamiento.
+- **Biblioteca de Presets**: Colección de patrones optimizados para documentos normativos (CUIT, Resoluciones, Fechas, Importes).
+- **Explicador Dinámico Inteligente**: Desglose estructurado que interpreta y explica cada componente de la expresión (Límites, Cuantificadores, Aserciones, etc.) facilitando el aprendizaje y la depuración.
+
 ### Ejemplo de Expresión Mixta:
 `\b(?<![0-9/])0*4\s*[-/]\s*2014\b; sumatoria; banco; bank; leasing`
 

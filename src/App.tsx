@@ -1,10 +1,11 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { Search, FileText, Download, Trash2, Moon, Sun, AlertCircle, FileSearch, CheckCircle2, BarChart3, Clock, Settings2, ShieldAlert, HelpCircle, Archive } from 'lucide-react';
+import { Search, FileText, Download, Trash2, Moon, Sun, AlertCircle, FileSearch, CheckCircle2, BarChart3, Clock, Settings2, ShieldAlert, HelpCircle, Archive, Code } from 'lucide-react';
 import { FileData, SearchResult, SearchStats } from './types';
 import FileUpload from './components/FileUpload';
 import ResultsTable from './components/ResultsTable';
 import StatsOverview from './components/StatsOverview';
+import RegexHelper from './components/RegexHelper';
 import { processFiles } from './services/fileProcessor';
 import { exportToCSV, exportToPDF, exportToDocx, exportErrorReport } from './services/exportService';
 
@@ -52,6 +53,13 @@ DocSearch Pro es una herramienta avanzada de búsqueda y análisis de documentos
 ## 🔍 Uso de Expresiones Regulares (REGEX)
 
 El sistema permite realizar búsquedas potentes utilizando Regex. Una expresión regular es una secuencia de caracteres que conforma un patrón de búsqueda.
+
+### 🛠️ Herramientas de Ayuda Regex (Novedad v4.0)
+Para facilitar el uso de patrones complejos, la aplicación incluye un **Asistente de Regex** avanzado:
+- **Validador en Tiempo Real**: Análisis instantáneo de la validez del patrón con descripción de errores.
+- **Probador (Sandbox)**: Área de pruebas interactiva para validar patrones contra textos reales antes del procesamiento.
+- **Biblioteca de Presets**: Colección de patrones optimizados para documentos normativos (CUIT, Resoluciones, Fechas, Importes).
+- **Explicador Dinámico Inteligente**: Desglose estructurado que interpreta y explica cada componente de la expresión (Límites, Cuantificadores, Aserciones, etc.) facilitando el aprendizaje y la depuración.
 
 ### Ejemplo de Expresión Mixta:
 \`\\b(?<![0-9/])0*4\\s*[-/]\\s*2014\\b; sumatoria; banco; bank; leasing\`
@@ -220,15 +228,33 @@ Este proyecto se encuentra amparado bajo los términos de la licencia MIT.
                 <div className="group">
                   <label className="block text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest group-hover:text-indigo-500 transition-colors">Términos de Búsqueda</label>
                   <div className="relative">
-                    <input 
-                      type="text"
-                      value={searchTerms}
-                      onChange={(e) => setSearchTerms(e.target.value)}
-                      placeholder="Separados por ';'"
-                      className={`w-full pl-10 pr-4 py-3 rounded-2xl border text-sm focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all ${isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-100 text-slate-900'}`}
-                    />
-                    <Search className="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400" />
+                    <div className={`relative rounded-2xl border transition-all ${useRegex ? 'border-indigo-500 ring-4 ring-indigo-500/10' : 'border-slate-100 dark:border-slate-700'}`}>
+                      <input 
+                        type="text"
+                        value={searchTerms}
+                        onChange={(e) => setSearchTerms(e.target.value)}
+                        placeholder={useRegex ? "Regex (ej: \\d{4})" : "Separados por ';'"}
+                        className={`w-full pl-10 pr-4 py-3 rounded-2xl text-sm outline-none transition-all ${
+                          isDarkMode 
+                            ? 'bg-slate-900 text-white placeholder-slate-600' 
+                            : 'bg-slate-50 text-slate-900 placeholder-slate-400'
+                        } ${useRegex ? 'font-mono text-indigo-500' : ''}`}
+                      />
+                      <Search className={`w-4 h-4 absolute left-3.5 top-3.5 ${useRegex ? 'text-indigo-500' : 'text-slate-400'}`} />
+                      {useRegex && (
+                        <div className="absolute right-3 top-3 flex items-center gap-1 px-2 py-0.5 bg-indigo-500 text-white text-[8px] font-black uppercase rounded-full tracking-tighter shadow-lg shadow-indigo-500/20">
+                          <Code className="w-2.5 h-2.5" /> Regex Activo
+                        </div>
+                      )}
+                    </div>
                   </div>
+                  {useRegex && (
+                    <RegexHelper 
+                      regex={searchTerms} 
+                      onRegexChange={setSearchTerms} 
+                      isDarkMode={isDarkMode} 
+                    />
+                  )}
                 </div>
 
                 <div className={`p-4 rounded-2xl flex items-center justify-between border transition-all ${useRegex ? 'border-indigo-500 bg-indigo-500/5' : 'border-transparent'}`}>

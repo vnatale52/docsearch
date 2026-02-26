@@ -52,7 +52,7 @@ export const exportToCSV = (files: FileData[]) => {
 
     return [
       csvSafe(hyperlinkFormula),
-      csvSafe(f.error || ''),
+      csvSafe(f.error ? 'SÍ' : 'NO'),
       csvSafe(f.ocrApplied ? 'SÍ' : 'NO'),
       csvSafe(counterStr),
       csvSafe(resolucion.replace(/(\r\n|\n|\r)/gm, " ")),

@@ -145,12 +145,16 @@ export const processFiles = async (
     try {
       let { text, pages, ocrApplied } = await extractText(fileData.file, enableOCR);
       
-      // Filtro de ruido: Ignorar el logo "comarb" si es detectado por OCR o texto
-      const noisePatterns = [/comarb/gi];
+      // Filtro de ruido: Ignorar el logo "comarb" y números de página aislados
+      const noisePatterns = [
+        /comarb/gi,
+        /(?:\n|^)\s*\d+\s*(?:\n|$)/g, // Números aislados en una línea (común en números de página)
+        /\b(página|pag\.)\s*\d+\b/gi  // Formatos tipo "Página 1" o "Pag. 1"
+      ];
       noisePatterns.forEach(pattern => {
-        text = text.replace(pattern, '');
+        text = text.replace(pattern, ' ');
         if (pages) {
-          pages = pages.map(p => p.replace(pattern, ''));
+          pages = pages.map(p => p.replace(pattern, ' '));
         }
       });
 

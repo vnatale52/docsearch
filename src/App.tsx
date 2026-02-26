@@ -79,11 +79,14 @@ El Reconocimiento Óptico de Caracteres (OCR) es una tecnología potente pero de
 
 ## 🛡️ Tratamiento de Logos y Ruido
 
-La aplicación incluye un sistema de filtrado inteligente para elementos gráficos recurrentes que no forman parte del contenido normativo:
+La aplicación incluye un sistema de filtrado inteligente para elementos gráficos recurrentes y metadatos de paginación que no forman parte del contenido normativo:
 
 - **Filtrado de Logo "comarb"**: Se ha implementado un tratamiento específico para el logo de la Comisión Arbitral. El sistema detecta y elimina automáticamente cualquier ocurrencia de la palabra "comarb" generada por el motor de OCR o presente en la capa de texto.
-- **Preservación de Continuidad**: Al ignorar estos elementos, el motor de búsqueda asegura que el texto que precede y subsigue al logo se analice como una unidad continua, evitando falsos negativos o fragmentación de hallazgos.
-- **Tratamiento Multicapa**: El logo es ignorado tanto en la extracción de texto nativo (donde es tratado como un objeto gráfico sin valor textual) como en el procesamiento por OCR (donde se aplica un filtro de ruido activo post-reconocimiento).
+- **Filtrado de Números de Página**: Se eliminan automáticamente las referencias a números de página aislados (ej. "Página 1", "Pag. 2" o números solitarios en una línea) para evitar que interfieran en la extracción de contexto.
+- **Preservación de Continuidad**: Al ignorar estos elementos, el motor de búsqueda asegura que el texto que precede y subsigue al logo o número de página se analice como una unidad continua, evitando falsos negativos o fragmentación de hallazgos.
+- **Tratamiento Multicapa**: El logo es ignorado tanto en la extracción de texto nativo como en el procesamiento por OCR.
+
+> **Nota sobre Proximidad de Términos**: Si un mismo término hallado se repite muy cercanamente al término original (dentro del radio de contexto configurado), parte del contexto que rodea al término aparecerá duplicado en el reporte, ya que cada ocurrencia genera su propio bloque de hallazgo independiente para garantizar la trazabilidad individual.
 
 ## 🛠️ Tecnologías Utilizadas
 

@@ -28,20 +28,20 @@ export const exportToCSV = (files: FileData[]) => {
     
     f.matches.forEach(m => {
       // Unique counts (only triggers)
-      matchCountsUnique[m.matchedText] = (matchCountsUnique[m.matchedText] || 0) + 1;
+      matchCountsUnique[m.term] = (matchCountsUnique[m.term] || 0) + 1;
       
       // Total counts (trigger + secondary)
-      matchCounts[m.matchedText] = (matchCounts[m.matchedText] || 0) + 1;
+      matchCounts[m.term] = (matchCounts[m.term] || 0) + 1;
       
       if (m.secondaryMatches) {
         m.secondaryMatches.forEach(sm => {
-          matchCounts[sm.matchedText] = (matchCounts[sm.matchedText] || 0) + 1;
+          matchCounts[sm.term] = (matchCounts[sm.term] || 0) + 1;
         });
       }
     });
 
-    const counterStrUnique = Object.entries(matchCountsUnique).map(([text, count]) => `${text} : ${count}`).join(' | ');
-    const counterStrTotal = Object.entries(matchCounts).map(([text, count]) => `${text} : ${count}`).join(' | ');
+    const counterStrUnique = Object.entries(matchCountsUnique).map(([term, count]) => `${term} : ${count}`).join(' | ');
+    const counterStrTotal = Object.entries(matchCounts).map(([term, count]) => `${term} : ${count}`).join(' | ');
 
     const uppercaseText = f.text.toUpperCase();
     const resIdx = uppercaseText.indexOf('RESOLUCIÓN');
@@ -249,7 +249,7 @@ export const exportToPDF = async (files: FileData[], stats: SearchStats) => {
   doc.save(`informe_analisis_${new Date().getTime()}.pdf`);
 };
 
-export const exportToDocx = async (files: FileData[]) => {
+export const exportToDocx = async (files: FileData[], stats: SearchStats) => {
   const sections = [{
     properties: {},
     children: [
@@ -263,6 +263,62 @@ export const exportToDocx = async (files: FileData[]) => {
         alignment: AlignmentType.CENTER,
       }),
       new Paragraph({ text: "", spacing: { after: 200 } }),
+      
+      new Paragraph({
+        text: "ESTADÍSTICAS GENERALES",
+        heading: HeadingLevel.HEADING_1,
+        spacing: { before: 400, after: 200 },
+      }),
+      new Paragraph({
+        children: [
+          new TextRun({ text: `Total archivos procesados: ${stats.totalFiles}`, bold: true }),
+        ],
+      }),
+      ...Object.entries(stats.filesByType).map(([ext, count]) => 
+        new Paragraph({ text: `  - ${ext.toUpperCase()}: ${count}`, indent: { left: 720 } })
+      ),
+      new Paragraph({ text: "", spacing: { before: 200 } }),
+      new Paragraph({
+        children: [
+          new TextRun({ 
+            text: `DETECTADOS, sin computar el contexto: ${stats.totalTermsUnique}`, 
+            bold: true,
+            color: "DC2626"
+          }),
+        ],
+      }),
+      ...Object.entries(stats.termsCountUnique).map(([term, count]) => 
+        new Paragraph({ 
+          children: [
+            new TextRun({ text: `  - ${term}: ${count}`, color: "DC2626" })
+          ],
+          indent: { left: 720 } 
+        })
+      ),
+      new Paragraph({ text: "", spacing: { before: 200 } }),
+      new Paragraph({
+        children: [
+          new TextRun({ 
+            text: `DETECTADOS, computando las repeticiones dentro del contexto: ${stats.totalTerms}`, 
+            bold: true,
+            color: "2563EB"
+          }),
+        ],
+      }),
+      ...Object.entries(stats.termsCount).map(([term, count]) => 
+        new Paragraph({ 
+          children: [
+            new TextRun({ text: `  - ${term}: ${count}`, color: "2563EB" })
+          ],
+          indent: { left: 720 } 
+        })
+      ),
+
+      new Paragraph({
+        text: "HALLAZGOS DETALLADOS",
+        heading: HeadingLevel.HEADING_1,
+        spacing: { before: 600, after: 200 },
+      }),
       ...files.filter(f => f.matches.length > 0).flatMap(f => [
         new Paragraph({
           children: [
@@ -277,21 +333,44 @@ export const exportToDocx = async (files: FileData[]) => {
           spacing: { before: 400, after: 100 },
         }),
         ...f.matches.map(m => {
-            const cleanContext = m.context.replace(/\[\[ELLIPSIS\]\]/g, "...").replace(/>>>|<<<|\[\[\[|\]\]\]/g, "");
+            const segments = m.context.split(/(>>>|<<<|\[\[\[|\]\]\]|\[\[ELLIPSIS\]\])/g);
+            const runs: TextRun[] = [
+                new TextRun({
+                    text: `└─ Hallazgo: ${m.matchedText}`,
+                    bold: true,
+                    size: 20,
+                    font: "Arial",
+                }),
+                new TextRun({
+                    text: ` | Contexto: `,
+                    size: 20,
+                    font: "Arial",
+                })
+            ];
+
+            let currentMode: 'normal' | 'trigger' | 'other' = 'normal';
+            segments.forEach(segment => {
+                if (segment === '>>>') currentMode = 'trigger';
+                else if (segment === '<<<') currentMode = 'normal';
+                else if (segment === '[[[') currentMode = 'other';
+                else if (segment === ']]]') currentMode = 'normal';
+                else if (segment === '[[ELLIPSIS]]') {
+                    runs.push(new TextRun({ text: "...", size: 20, font: "Arial" }));
+                } else if (segment.length > 0) {
+                    const color = currentMode === 'trigger' ? "DC2626" : 
+                                 currentMode === 'other' ? "2563EB" : undefined;
+                    runs.push(new TextRun({
+                        text: segment,
+                        color: color,
+                        bold: currentMode !== 'normal',
+                        size: 20,
+                        font: "Arial",
+                    }));
+                }
+            });
+
             return new Paragraph({
-                children: [
-                    new TextRun({
-                        text: `└─ Hallazgo: ${m.matchedText}`,
-                        bold: true,
-                        size: 20,
-                        font: "Arial",
-                    }),
-                    new TextRun({
-                        text: ` | Contexto: ${cleanContext}`,
-                        size: 20,
-                        font: "Arial",
-                    })
-                ],
+                children: runs,
                 alignment: AlignmentType.BOTH,
                 spacing: { after: 120 },
                 indent: { left: 720 },

@@ -1,4 +1,4 @@
-# DocSearch Pro v4.0
+# DocSearch Pro v4.1
 
 DocSearch Pro es una herramienta avanzada de búsqueda y análisis de documentos diseñada para procesar archivos locales (PDF, DOCX, XLSX, TXT) de forma rápida y segura, directamente en el navegador.
 
@@ -8,7 +8,7 @@ DocSearch Pro es una herramienta avanzada de búsqueda y análisis de documentos
 - **Análisis Inteligente**: Extracción automática de metadatos como la Fecha de Emisión y Número de Resolución.
 - **Búsqueda Avanzada**: Soporte para múltiples términos de búsqueda y expresiones regulares (Regex).
 - **Privacidad Total**: El procesamiento se realiza localmente en el navegador; los documentos nunca se suben a un servidor externo.
-- **Exportación Profesional**: Generación de informes detallados en formatos PDF, Word (Docx) y CSV (Excel).
+- **Exportación Profesional**: Generación de informes detallados en formatos PDF, Word (Docx) y CSV (Excel) con absoluta consistencia de datos.
 - **Interfaz Moderna**: Diseño limpio con soporte para Modo Oscuro y visualización de estadísticas en tiempo real.
 - **OCR Integrado**: Capacidad de procesar PDFs escaneados mediante reconocimiento óptico de caracteres.
 
@@ -56,23 +56,26 @@ La aplicación incluye un sistema de filtrado inteligente para elementos gráfic
 - **Preservación de Continuidad**: Al ignorar estos elementos, el motor de búsqueda asegura que el texto que precede y subsigue al logo o número de página se analice como una unidad continua, evitando falsos negativos o fragmentación de hallazgos.
 - **Tratamiento Multicapa**: El logo es ignorado tanto en la extracción de texto nativo como en el procesamiento por OCR.
 
-## 📊 Resumen de Hallazgos (Novedad v4.1)
+## 📊 Resumen de Hallazgos y Consistencia (v4.1)
 
-Para una mayor precisión en el análisis, el sistema ahora separa el contador de términos **DETECTADOS** en dos categorías, basándose en la proximidad y el contexto:
+Para una máxima precisión y trazabilidad, el sistema utiliza un criterio de conteo unificado en la interfaz gráfica, archivos CSV y reportes PDF/Word. Los hallazgos se separan en dos categorías críticas:
 
-- **DETECTADOS, sin computar el contexto**: Este contador refleja únicamente las ocurrencias principales (triggers). No computa las repeticiones que aparecen dentro del radio del contexto configurado para un hallazgo principal. Es ideal para conocer la cantidad exacta de "puntos de interés" únicos.
-- **DETECTADOS, computando las repeticiones dentro del contexto**: Este contador mantiene la lógica tradicional, sumando todas las apariciones de los términos buscados, incluso si se encuentran dentro del bloque de contexto de otro hallazgo.
+- **DETECTADOS, sin computar el contexto (Color Rojo)**: Este contador refleja únicamente las ocurrencias principales (triggers). No computa las repeticiones que aparecen dentro del radio del contexto configurado para un hallazgo principal. Es ideal para conocer la cantidad exacta de "puntos de interés" únicos.
+- **DETECTADOS, computando las repeticiones dentro del contexto (Color Azul)**: Este contador suma todas las apariciones de los términos buscados, incluyendo aquellas que se encuentran dentro del bloque de contexto de otro hallazgo. Refleja la densidad total de menciones.
 
-Esta distinción permite al analista diferenciar entre la cantidad de "lugares" donde se halló información y la "densidad" total de menciones de los términos.
+### 🎨 Identificación Visual en Reportes
+Para facilitar la lectura técnica de los informes en PDF y Word, se ha implementado un código de colores consistente:
+- **Rojo (#DC2626)**: Identifica los términos que dispararon el hallazgo principal (Sin Contexto).
+- **Azul (#2563EB)**: Identifica las repeticiones o términos secundarios hallados dentro del radio de contexto (Con Contexto).
 
-> **Nota sobre Proximidad de Términos**: Si un mismo término hallado se repite muy cercanamente al término original (dentro del radio de contexto configurado), parte del contexto que rodea al término aparecerá duplicado en el reporte, ya que cada ocurrencia genera su propio bloque de hallazgo independiente para garantizar la trazabilidad individual. Los nuevos contadores de la v4.1 ayudan a interpretar esta redundancia necesaria.
+Esta distinción permite al analista diferenciar visualmente entre la ubicación de un hallazgo y la información complementaria que lo rodea.
 
 ## 📁 Formato de Exportación CSV
 
 El archivo CSV generado incluye una columna `Path_Nombre_Archivo` con una fórmula de hipervínculo optimizada para entornos locales:
 `=HYPERLINK("C:\Users\vn\Desktop\resoluciones\archivo.pdf"; "archivo.pdf")`
 
-Esto permite la apertura directa de los documentos desde Excel si se encuentran en la ruta especificada.
+Además, el CSV desglosa ambos tipos de conteos (Sin Contexto y Con Contexto) por cada término de búsqueda, manteniendo la paridad absoluta con las estadísticas mostradas en pantalla.
 
 ## 🛠️ Tecnologías Utilizadas
 

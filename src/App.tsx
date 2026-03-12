@@ -365,7 +365,7 @@ Este proyecto se encuentra amparado bajo los términos de la licencia MIT.
                       <Download className="w-4 h-4" /> PDF
                     </button>
                     <button 
-                      onClick={() => exportToDocx(files)}
+                      onClick={() => stats && exportToDocx(files, stats)}
                       className="flex items-center gap-2 px-4 py-2.5 text-[11px] font-black uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-95"
                     >
                       <Download className="w-4 h-4" /> Word

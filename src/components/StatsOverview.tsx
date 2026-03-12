@@ -19,44 +19,53 @@ const StatsOverview: React.FC<StatsOverviewProps> = ({ stats, isDarkMode }) => {
   const termData = Object.entries(stats.termsCount).map(([name, value]) => ({ name, value }));
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
       <StatCard 
         title="ARCHIVOS LEIDOS" 
         value={stats.totalFiles} 
-        icon={<Files className="w-5 h-5" />} 
+        icon={<Files className="w-4 h-4" />} 
         color="from-indigo-500 to-indigo-600" 
         isDarkMode={isDarkMode}
       />
       <StatCard 
         title="Procesados OCR" 
         value={stats.ocrFilesCount} 
-        icon={<FileSearch className="w-5 h-5" />} 
+        icon={<FileSearch className="w-4 h-4" />} 
         color="from-blue-500 to-blue-600" 
         isDarkMode={isDarkMode}
       />
       <StatCard 
-        title="Ocurrencias" 
-        value={stats.totalTerms} 
-        icon={<Search className="w-5 h-5" />} 
+        title="DETECTADOS (Sin Contexto)" 
+        value={stats.totalTermsUnique} 
+        icon={<Search className="w-4 h-4" />} 
         color="from-emerald-500 to-emerald-600" 
         isDarkMode={isDarkMode}
+        subtitle="Sin computar repeticiones"
+      />
+      <StatCard 
+        title="DETECTADOS (Con Contexto)" 
+        value={stats.totalTerms} 
+        icon={<Search className="w-4 h-4" />} 
+        color="from-teal-500 to-teal-600" 
+        isDarkMode={isDarkMode}
+        subtitle="Computando repeticiones"
       />
       <StatCard 
         title="Términos Hallados" 
         value={Object.keys(stats.termsCount).length} 
-        icon={<BarChart3 className="w-5 h-5" />} 
+        icon={<BarChart3 className="w-4 h-4" />} 
         color="from-amber-500 to-amber-600" 
         isDarkMode={isDarkMode}
       />
       <StatCard 
         title="Errores" 
         value={stats.errors.length} 
-        icon={<AlertCircle className="w-5 h-5" />} 
+        icon={<AlertCircle className="w-4 h-4" />} 
         color="from-rose-500 to-rose-600" 
         isDarkMode={isDarkMode}
       />
 
-      <div className={`lg:col-span-2 sm:col-span-2 p-8 rounded-3xl border shadow-xl transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
+      <div className={`lg:col-span-3 xl:col-span-2 p-8 rounded-3xl border shadow-xl transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
         <div className="flex items-center justify-between mb-8">
           <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
             <PieChartIcon className="w-4 h-4 text-indigo-500" /> Distribución por Extensión
@@ -99,7 +108,7 @@ const StatsOverview: React.FC<StatsOverviewProps> = ({ stats, isDarkMode }) => {
         </div>
       </div>
 
-      <div className={`lg:col-span-3 sm:col-span-2 p-8 rounded-3xl border shadow-xl transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
+      <div className={`lg:col-span-3 xl:col-span-4 p-8 rounded-3xl border shadow-xl transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
         <div className="flex items-center justify-between mb-8">
           <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
             <BarChart3 className="w-4 h-4 text-emerald-500" /> Ocurrencias por Término
@@ -141,7 +150,7 @@ const StatsOverview: React.FC<StatsOverviewProps> = ({ stats, isDarkMode }) => {
       </div>
       
       {stats.errors.length > 0 && (
-        <div className="lg:col-span-5 sm:col-span-2 p-6 bg-rose-500/10 border border-rose-500/20 rounded-3xl backdrop-blur-sm">
+        <div className="lg:col-span-6 p-6 bg-rose-500/10 border border-rose-500/20 rounded-3xl backdrop-blur-sm">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-rose-500 text-white rounded-lg shadow-lg shadow-rose-500/20">
               <AlertCircle className="w-5 h-5" />
@@ -167,20 +176,22 @@ interface StatCardProps {
   icon: React.ReactNode;
   color: string;
   isDarkMode: boolean;
+  subtitle?: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color, isDarkMode }) => (
-  <div className={`p-6 rounded-3xl border shadow-xl relative overflow-hidden transition-all hover:scale-[1.02] ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
-    <div className="flex items-center gap-5 relative z-10">
-      <div className={`p-3 rounded-2xl text-white bg-gradient-to-br shadow-lg ${color}`}>
+const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color, isDarkMode, subtitle }) => (
+  <div className={`p-5 rounded-3xl border shadow-xl relative overflow-hidden transition-all hover:scale-[1.02] ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
+    <div className="flex items-start gap-4 relative z-10">
+      <div className={`p-2.5 rounded-xl text-white bg-gradient-to-br shadow-lg shrink-0 ${color}`}>
         {icon}
       </div>
-      <div>
-        <div className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">{title}</div>
-        <div className="text-2xl font-black tracking-tight tabular-nums">{value}</div>
+      <div className="min-w-0 flex-1">
+        <div className="text-[9px] font-black uppercase text-slate-400 tracking-wider mb-1 leading-tight break-words">{title}</div>
+        <div className="text-xl font-black tracking-tight tabular-nums leading-none mb-1">{value}</div>
+        {subtitle && <div className="text-[8px] font-bold text-slate-400 uppercase leading-tight opacity-80">{subtitle}</div>}
       </div>
     </div>
-    <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${color} opacity-[0.03] -mr-8 -mt-8 rounded-full`}></div>
+    <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${color} opacity-[0.03] -mr-6 -mt-6 rounded-full`}></div>
   </div>
 );
 

@@ -11,22 +11,37 @@ import {
 } from 'docx';
 
 export const exportToCSV = (files: FileData[]) => {
-  const headers = ['Path_Nombre_Archivo', 'Errores_Lectura', 'OCR_Aplicado', 'Contador_Términos_Hallados', 'Nro_Resolución', 'Fecha_Emisión', 'Texto_Visto_Hasta_Considerando'];
+  const headers = [
+    'Path_Nombre_Archivo', 
+    'Errores_Lectura', 
+    'OCR_Aplicado', 
+    'DETECTADOS_Sin_Contexto', 
+    'DETECTADOS_Con_Contexto', 
+    'Nro_Resolución', 
+    'Fecha_Emisión', 
+    'Texto_Visto_Hasta_Considerando'
+  ];
   
   const rows = files.map(f => {
     const matchCounts: Record<string, number> = {};
+    const matchCountsUnique: Record<string, number> = {};
+    
     f.matches.forEach(m => {
-      // Count the trigger
+      // Unique counts (only triggers)
+      matchCountsUnique[m.matchedText] = (matchCountsUnique[m.matchedText] || 0) + 1;
+      
+      // Total counts (trigger + secondary)
       matchCounts[m.matchedText] = (matchCounts[m.matchedText] || 0) + 1;
       
-      // Count secondary matches in context
       if (m.secondaryMatches) {
         m.secondaryMatches.forEach(sm => {
           matchCounts[sm.matchedText] = (matchCounts[sm.matchedText] || 0) + 1;
         });
       }
     });
-    const counterStr = Object.entries(matchCounts).map(([text, count]) => `${text} : ${count}`).join(' | ');
+
+    const counterStrUnique = Object.entries(matchCountsUnique).map(([text, count]) => `${text} : ${count}`).join(' | ');
+    const counterStrTotal = Object.entries(matchCounts).map(([text, count]) => `${text} : ${count}`).join(' | ');
 
     const uppercaseText = f.text.toUpperCase();
     const resIdx = uppercaseText.indexOf('RESOLUCIÓN');
@@ -48,13 +63,14 @@ export const exportToCSV = (files: FileData[]) => {
     const csvSafe = (val: string) => `"${(val || '').replace(/"/g, '""')}"`;
 
     // Actualización de la fórmula HYPERLINK solicitada
-    const hyperlinkFormula = `=HYPERLINK("Copia aquí el path completo de la ubicación del archivo en disco"; "${f.file.name}")`;
+    const hyperlinkFormula = `=HYPERLINK("C:\\Users\\vn\\Desktop\\resoluciones\\${f.file.name}"; "${f.file.name}")`;
 
     return [
       csvSafe(hyperlinkFormula),
       csvSafe(f.error ? 'SÍ' : 'NO'),
       csvSafe(f.ocrApplied ? 'SÍ' : 'NO'),
-      csvSafe(counterStr),
+      csvSafe(counterStrUnique),
+      csvSafe(counterStrTotal),
       csvSafe(resolucion.replace(/(\r\n|\n|\r)/gm, " ")),
       csvSafe(f.metadata.fechaEmision || ''),
       csvSafe(vistoTexto.replace(/(\r\n|\n|\r)/gm, " "))
@@ -151,7 +167,13 @@ export const exportToPDF = async (files: FileData[], stats: SearchStats) => {
   });
   
   y += 4;
-  doc.text(`Cantidad total de términos hallados: ${stats.totalTerms}`, margin + 5, y); y += 7;
+  doc.text(`DETECTADOS, sin computar el contexto: ${stats.totalTermsUnique}`, margin + 5, y); y += 7;
+  Object.entries(stats.termsCountUnique).forEach(([term, count]) => {
+    doc.text(`  - ${term}: ${count}`, margin + 10, y); y += 6;
+  });
+  
+  y += 4;
+  doc.text(`DETECTADOS, computando las repeticiones dentro del contexto: ${stats.totalTerms}`, margin + 5, y); y += 7;
   Object.entries(stats.termsCount).forEach(([term, count]) => {
     doc.text(`  - ${term}: ${count}`, margin + 10, y); y += 6;
   });

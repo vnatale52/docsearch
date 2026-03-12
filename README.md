@@ -56,7 +56,23 @@ La aplicación incluye un sistema de filtrado inteligente para elementos gráfic
 - **Preservación de Continuidad**: Al ignorar estos elementos, el motor de búsqueda asegura que el texto que precede y subsigue al logo o número de página se analice como una unidad continua, evitando falsos negativos o fragmentación de hallazgos.
 - **Tratamiento Multicapa**: El logo es ignorado tanto en la extracción de texto nativo como en el procesamiento por OCR.
 
-> **Nota sobre Proximidad de Términos**: Si un mismo término hallado se repite muy cercanamente al término original (dentro del radio de contexto configurado), parte del contexto que rodea al término aparecerá duplicado en el reporte, ya que cada ocurrencia genera su propio bloque de hallazgo independiente para garantizar la trazabilidad individual.
+## 📊 Resumen de Hallazgos (Novedad v4.1)
+
+Para una mayor precisión en el análisis, el sistema ahora separa el contador de términos **DETECTADOS** en dos categorías, basándose en la proximidad y el contexto:
+
+- **DETECTADOS, sin computar el contexto**: Este contador refleja únicamente las ocurrencias principales (triggers). No computa las repeticiones que aparecen dentro del radio del contexto configurado para un hallazgo principal. Es ideal para conocer la cantidad exacta de "puntos de interés" únicos.
+- **DETECTADOS, computando las repeticiones dentro del contexto**: Este contador mantiene la lógica tradicional, sumando todas las apariciones de los términos buscados, incluso si se encuentran dentro del bloque de contexto de otro hallazgo.
+
+Esta distinción permite al analista diferenciar entre la cantidad de "lugares" donde se halló información y la "densidad" total de menciones de los términos.
+
+> **Nota sobre Proximidad de Términos**: Si un mismo término hallado se repite muy cercanamente al término original (dentro del radio de contexto configurado), parte del contexto que rodea al término aparecerá duplicado en el reporte, ya que cada ocurrencia genera su propio bloque de hallazgo independiente para garantizar la trazabilidad individual. Los nuevos contadores de la v4.1 ayudan a interpretar esta redundancia necesaria.
+
+## 📁 Formato de Exportación CSV
+
+El archivo CSV generado incluye una columna `Path_Nombre_Archivo` con una fórmula de hipervínculo optimizada para entornos locales:
+`=HYPERLINK("C:\Users\vn\Desktop\resoluciones\archivo.pdf"; "archivo.pdf")`
+
+Esto permite la apertura directa de los documentos desde Excel si se encuentran en la ruta especificada.
 
 ## 🛠️ Tecnologías Utilizadas
 

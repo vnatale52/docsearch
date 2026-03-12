@@ -134,7 +134,9 @@ export const processFiles = async (
     totalFiles: files.length,
     filesByType: {},
     totalTerms: 0,
+    totalTermsUnique: 0,
     termsCount: {},
+    termsCountUnique: {},
     errors: [],
     ocrFilesCount: 0
   };
@@ -261,8 +263,13 @@ export const processFiles = async (
             secondaryMatches: secondaryMatches
           });
 
+          // Increment total (including context)
           stats.totalTerms++;
           stats.termsCount[term] = (stats.termsCount[term] || 0) + 1;
+
+          // Increment unique (trigger only)
+          stats.totalTermsUnique++;
+          stats.termsCountUnique[term] = (stats.termsCountUnique[term] || 0) + 1;
         }
       }
 

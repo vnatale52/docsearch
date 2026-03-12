@@ -27,8 +27,10 @@ export interface FileData {
 export interface SearchStats {
   totalFiles: number;
   filesByType: Record<string, number>;
-  totalTerms: number;
-  termsCount: Record<string, number>;
+  totalTerms: number; // This will remain as the "computando repeticiones" count
+  totalTermsUnique: number; // New: "sin computar el contexto"
+  termsCount: Record<string, number>; // Total counts
+  termsCountUnique: Record<string, number>; // Unique counts
   errors: string[];
   ocrFilesCount: number;
 }

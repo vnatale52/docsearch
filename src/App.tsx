@@ -192,6 +192,15 @@ Este proyecto se encuentra amparado bajo los términos de la licencia MIT.
               <span className="hidden sm:inline">Descargar Readme.md</span>
             </button>
             <a 
+              href="/Descargar archivo de ejemplo.pdf"
+              download="Descargar archivo de ejemplo.pdf"
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all text-[11px] font-bold border ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm'}`}
+              title="Descargar archivo de ejemplo.pdf"
+            >
+              <FileText className="w-4 h-4 text-indigo-500" />
+              <span className="hidden sm:inline">Descargar archivo de ejemplo.pdf</span>
+            </a>
+            <a 
               href="https://github.com/vnatale52/docsearch/raw/main/resoluciones/resolucionesCA_CP_desde_01-2014a12-2025.zip"
               className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all text-[11px] font-bold border ${isDarkMode ? 'bg-indigo-900/40 border-indigo-800 text-indigo-300 hover:bg-indigo-900/60' : 'bg-indigo-50 border-indigo-100 text-indigo-600 hover:bg-indigo-100 shadow-sm'}`}
               title="Descargar Resoluciones sobre casos concretos - emitidas desde 01-2014 a 12-2025 - por la Comisión Abitral y la Comisión Plenaria del Convenio Multilateral - en el Impuesto sobre los Ingresos Brutos"

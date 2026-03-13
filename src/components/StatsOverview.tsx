@@ -16,7 +16,7 @@ const StatsOverview: React.FC<StatsOverviewProps> = ({ stats, isDarkMode }) => {
     name: name.toUpperCase(), 
     value 
   }));
-  const termData = Object.entries(stats.termsCount).map(([name, value]) => ({ name, value }));
+  const termData = Object.entries(stats.termsCountUnique).map(([name, value]) => ({ name, value }));
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
@@ -52,10 +52,11 @@ const StatsOverview: React.FC<StatsOverviewProps> = ({ stats, isDarkMode }) => {
       />
       <StatCard 
         title="Términos Hallados" 
-        value={Object.keys(stats.termsCount).length} 
+        value={Object.keys(stats.termsCountUnique).length} 
         icon={<BarChart3 className="w-4 h-4" />} 
         color="from-amber-500 to-amber-600" 
         isDarkMode={isDarkMode}
+        subtitle="Sin repeticiones"
       />
       <StatCard 
         title="Errores" 

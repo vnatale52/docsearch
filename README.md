@@ -63,16 +63,19 @@ Para una máxima precisión y trazabilidad, el sistema utiliza un criterio de co
 - **DETECTADOS, sin computar el contexto (Color Rojo)**: Este contador refleja únicamente las ocurrencias principales (triggers). No computa las repeticiones que aparecen dentro del radio del contexto configurado para un hallazgo principal. Es ideal para conocer la cantidad exacta de "puntos de interés" únicos.
 - **DETECTADOS, computando las repeticiones dentro del contexto (Color Azul)**: Este contador suma todas las apariciones de los términos buscados, incluyendo aquellas que se encuentran dentro del bloque de contexto de otro hallazgo. Refleja la densidad total de menciones.
 
-### 🎨 Identificación Visual en Reportes
-Para facilitar la lectura técnica de los informes en PDF y Word, se ha implementado un código de colores consistente:
-- **Rojo (#DC2626)**: Identifica los términos que dispararon el hallazgo principal (Sin Contexto).
+### 🎨 Identificación Visual y Gráficos
+Para facilitar la lectura técnica de los informes en PDF y Word, así como en el panel de control, se ha implementado un código de colores y criterios de visualización consistentes:
+- **Rojo (#DC2626)**: Identifica los términos que dispararon el hallazgo principal (Sin Contexto). El gráfico de **"Ocurrencias por Término"** utiliza ahora este criterio por defecto para mostrar la distribución de hallazgos únicos.
 - **Azul (#2563EB)**: Identifica las repeticiones o términos secundarios hallados dentro del radio de contexto (Con Contexto).
 
 Esta distinción permite al analista diferenciar visualmente entre la ubicación de un hallazgo y la información complementaria que lo rodea.
 
-## 📁 Formato de Exportación CSV
+## 📁 Recursos y Ejemplos
 
-El archivo CSV generado incluye una columna `Path_Nombre_Archivo` con una fórmula de hipervínculo optimizada para entornos locales:
+La aplicación facilita el aprendizaje y la validación mediante recursos integrados:
+- **Archivo de Ejemplo**: Se incluye un documento PDF de prueba ("Descargar archivo de ejemplo.pdf") accesible desde el encabezado para validar el funcionamiento del motor de búsqueda y OCR.
+- **Base de Resoluciones**: Acceso directo a una biblioteca comprimida de resoluciones normativas (2014-2025) para análisis masivos.
+- **Formato CSV**: El archivo generado incluye una columna `Path_Nombre_Archivo` con una fórmula de hipervínculo optimizada para entornos locales:
 `=HYPERLINK("C:\Users\vn\Desktop\resoluciones\archivo.pdf"; "archivo.pdf")`
 
 Además, el CSV desglosa ambos tipos de conteos (Sin Contexto y Con Contexto) por cada término de búsqueda, manteniendo la paridad absoluta con las estadísticas mostradas en pantalla.

@@ -70,13 +70,18 @@ Para facilitar la lectura técnica de los informes en PDF y Word, así como en e
 
 Esta distinción permite al analista diferenciar visualmente entre la ubicación de un hallazgo y la información complementaria que lo rodea.
 
-## 📁 Recursos y Ejemplos
+## 📁 Recursos y Ejemplos (Actualizado v4.1)
 
-La aplicación facilita el aprendizaje y la validación mediante recursos integrados:
-- **Archivo de Ejemplo**: Se incluye un documento PDF de prueba ("Descargar archivo de ejemplo.pdf") accesible desde el encabezado para validar el funcionamiento del motor de búsqueda y OCR.
-- **Base de Resoluciones**: Acceso directo a una biblioteca comprimida de resoluciones normativas (2014-2025) para análisis masivos.
+La aplicación facilita el aprendizaje y la validación mediante recursos integrados de alta fidelidad:
+- **Archivo de Ejemplo Premium**: Se incluye un documento PDF de prueba ("Descargar archivo de ejemplo.pdf") reconstruido con estilos visuales avanzados (resaltados amarillos, bordes técnicos y colores corporativos) que muestra oraciones reales y la estructura esperada de los informes.
+- **Base de Resoluciones**: Acceso directo a una biblioteca comprimida de resoluciones emitidas por la Comisión Arbitral y por la Comisión Plenaria (2014-2025) para la resolución de casos concretos elevados ante las distintas jurisdicciones tributarias del país, en el marco del Convenio Multilateral sobre el Impuesto sobre los Ingresos Brutos.
 - **Formato CSV**: El archivo generado incluye una columna `Path_Nombre_Archivo` con una fórmula de hipervínculo optimizada para entornos locales:
 `=HYPERLINK("C:\Users\vn\Desktop\resoluciones\archivo.pdf"; "archivo.pdf")`
+
+  > **Nota de compatibilidad e instrucciones**:
+  > 1. Para que esta fórmula funcione correctamente en versiones de **MS Excel** o **LibreOffice Calc** configuradas en español, el comando `HYPERLINK` debe ser traducido a su equivalente: `=HIPERVINCULO(...)`. En versiones antiguas de LibreOffice/OpenOffice Calc en español, el comando estándar ha sido siempre `HIPERVINCULO`.
+  > 2. **Conversión de formato**: El archivo CSV descargado debe ser guardado/convertido previamente a formato **.xlsx** (Excel) o formato nativo de Calc para que las fórmulas se activen correctamente.
+  > 3. **Ruta de archivos**: Es imprescindible adecuar el argumento de la función para que incluya el **path completo** de la ubicación real en disco donde el usuario tiene almacenados los documentos. Sin la ruta absoluta correcta, el vínculo no podrá abrir el archivo.
 
 Además, el CSV desglosa ambos tipos de conteos (Sin Contexto y Con Contexto) por cada término de búsqueda, manteniendo la paridad absoluta con las estadísticas mostradas en pantalla.
 
@@ -94,6 +99,10 @@ Además, el CSV desglosa ambos tipos de conteos (Sin Contexto y Con Contexto) po
 - **Exportación**:
   - jspdf para informes PDF.
   - docx para informes Word.
+
+## 👤 Autor
+
+Este proyecto ha sido desarrollado por Vincenzo Natale. A vuestra disposición en: vnatale52@gmail.com
 
 ## 📄 Licencia
 

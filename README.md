@@ -1,32 +1,32 @@
 # DocSearch Pro v4.1
 
-DocSearch Pro es una herramienta avanzada de búsqueda y análisis de documentos diseñada para procesar archivos locales (PDF, DOCX, XLSX, TXT) de forma rápida y segura, directamente en el navegador.
+DocSearch Pro es una herramienta avanzada de búsqueda y análisis de documentos diseñada para procesar archivos locales (PDF, DOCX, XLSX, TXT) de forma rápida y segura, directamente en el navegador. Recomendable, principalmente, para la búsqueda en resoluciones de la Comisión Arbitral (CA) y de la Comisión Plenaria (CP), documentación subida a los expedientes electrónicos, códigos fiscales.
 
 ## 🚀 Características Principales
 
-- **Búsqueda Multiformato**: Soporte nativo para archivos PDF, Word (.docx), Excel (.xlsx, .xls) y Texto Plano (.txt).
-- **Análisis Inteligente**: Extracción automática de metadatos como la Fecha de Emisión y Número de Resolución.
+- **Búsqueda Multiformato**: Soporte nativo para archivos PDF, Word (.docx), Excel (.xlsx) y Texto Plano (.txt).
+- **Análisis Inteligente**: Extracción automática de metadatos como la Fecha de Emisión y Número de Resolución (en pdf de la CA y CP).
 - **Búsqueda Avanzada**: Soporte para múltiples términos de búsqueda y expresiones regulares (Regex).
 - **Privacidad Total**: El procesamiento se realiza localmente en el navegador; los documentos nunca se suben a un servidor externo.
 - **Exportación Profesional**: Generación de informes detallados en formatos PDF, Word (Docx) y CSV (Excel) con absoluta consistencia de datos.
 - **Interfaz Moderna**: Diseño limpio con soporte para Modo Oscuro y visualización de estadísticas en tiempo real.
-- **OCR Integrado**: Capacidad de procesar PDFs escaneados mediante reconocimiento óptico de caracteres.
+- **OCR Integrado**: Capacidad de procesar PDFs escaneados mediante reconocimiento óptico de caracteres (ver Limitaciones del OCR).
 
 ## 🔍 Uso de Expresiones Regulares (REGEX)
 
 El sistema permite realizar búsquedas potentes utilizando Regex. Una expresión regular es una secuencia de caracteres que conforma un patrón de búsqueda.
 
-### 🛠️ Herramientas de Ayuda Regex (Novedad v4.0)
+### 🛠️ Herramientas de Ayuda Regex (Novedad v4.1)
 Para facilitar el uso de patrones complejos, la aplicación incluye un **Asistente de Regex** avanzado:
 - **Validador en Tiempo Real**: Análisis instantáneo de la validez del patrón con descripción de errores.
 - **Probador (Sandbox)**: Área de pruebas interactiva para validar patrones contra textos reales antes del procesamiento.
-- **Biblioteca de Presets**: Colección de patrones optimizados para documentos normativos (CUIT, Resoluciones, Fechas, Importes).
+- **Biblioteca de Presets**: Colección de patrones optimizados para documentos normativos (para la búsqueda de CUIT, Nº de Resoluciones, Fechas, Importes).
 - **Explicador Dinámico Inteligente**: Desglose estructurado que interpreta y explica cada componente de la expresión (Límites, Cuantificadores, Aserciones, etc.) facilitando el aprendizaje y la depuración.
 
 ### Ejemplo de Expresión Mixta:
 `\b(?<![0-9/])0*4\s*[-/]\s*2014\b; sumatoria; banco; bank; leasing`
 
-Esta expresión combina un patrón **REGEX** con **términos literales**, separados por punto y coma (`;`):
+Esta expresión combina un patrón **REGEX** con varios **términos literales**, separados por punto y coma (`;`):
 
 1.  **Patrón REGEX (`\b(?<![0-9/])0*4\s*[-/]\s*2014\b`)**:
     -   `\b`: Asegura que la coincidencia sea una palabra completa.
@@ -47,11 +47,16 @@ El Reconocimiento Óptico de Caracteres (OCR) es una tecnología potente pero de
 -   **Fuentes No Estándar**: Tipografías muy estilizadas o texto manuscrito pueden generar errores de lectura.
 -   **Inclinación**: Documentos escaneados con una inclinación excesiva pueden afectar la detección de líneas de texto.
 
+Para documentos cuyo contenido alterne entre texto  y no texto (imágenes, gráficos, tablas, cuadros escaneados pegados, insertados, encrustados o embebidos en medio del contenido que - sí - es texto), es decir, el mismo documento contiene, ambos formatos (texto y no texto), para estos casos es muy recomendable que el usuario realice, previamente, una "mini prueba" de búsqueda de términos, de manera tal, de testear la respuesta de la aplicación, para determinar si ésta produce realmente el resultado esperado. 
+
+Por otro lado, esta aplicación corre en un server (Render.com), utilizando una cuenta gratuita, que sólo permite el uso de una cantidad mínima de recursos de hardware, lo cual, hace que para OCR (que es "hardware intensive") el server pueda llegar a producir resultados erráticos. No obstante ello, atendiendo al nivel de pruebas realizadas, la utilización del reconocimiento OCR ha sido satisfactorio.
+
+
 ## 🛡️ Tratamiento de Logos y Ruido
 
 La aplicación incluye un sistema de filtrado inteligente para elementos gráficos recurrentes y metadatos de paginación que no forman parte del contenido normativo:
 
-- **Filtrado de Logo "comarb"**: Se ha implementado un tratamiento específico para el logo de la Comisión Arbitral. El sistema detecta y elimina automáticamente cualquier ocurrencia de la palabra "comarb" generada por el motor de OCR o presente en la capa de texto.
+- **Filtrado de Logo "Comarb"**: Se ha implementado un tratamiento específico para el logo de la Comisión Arbitral (que aparece insertado en el texto de sus resoluciones). El sistema detecta y elimina automáticamente cualquier ocurrencia de la palabra "Comarb" (contenida en dicho logo) generada por el motor de OCR o presente en la capa de texto.
 - **Filtrado de Números de Página**: Se eliminan automáticamente las referencias a números de página aislados (ej. "Página 1", "Pag. 2" o números solitarios en una línea) para evitar que interfieran en la extracción de contexto.
 - **Preservación de Continuidad**: Al ignorar estos elementos, el motor de búsqueda asegura que el texto que precede y subsigue al logo o número de página se analice como una unidad continua, evitando falsos negativos o fragmentación de hallazgos.
 - **Tratamiento Multicapa**: El logo es ignorado tanto en la extracción de texto nativo como en el procesamiento por OCR.
@@ -70,13 +75,18 @@ Para facilitar la lectura técnica de los informes en PDF y Word, así como en e
 
 Esta distinción permite al analista diferenciar visualmente entre la ubicación de un hallazgo y la información complementaria que lo rodea.
 
-## 📁 Recursos y Ejemplos
+## 📁 Recursos y Ejemplos (Actualizado v4.1)
 
-La aplicación facilita el aprendizaje y la validación mediante recursos integrados:
-- **Archivo de Ejemplo**: Se incluye un documento PDF de prueba ("Descargar archivo de ejemplo.pdf") accesible desde el encabezado para validar el funcionamiento del motor de búsqueda y OCR.
-- **Base de Resoluciones**: Acceso directo a una biblioteca comprimida de resoluciones normativas (2014-2025) para análisis masivos.
-- **Formato CSV**: El archivo generado incluye una columna `Path_Nombre_Archivo` con una fórmula de hipervínculo optimizada para entornos locales:
+La aplicación facilita el aprendizaje y la validación mediante recursos integrados de alta fidelidad:
+- **Archivo de Ejemplo Premium**: Se incluye un documento PDF de prueba ("Descargar archivo de ejemplo.pdf") reconstruido con estilos visuales avanzados (resaltados amarillos, bordes técnicos y colores corporativos) que muestra oraciones reales y la estructura esperada de los informes.
+- **Base de Resoluciones**: Acceso directo a una biblioteca comprimida de resoluciones emitidas por la Comisión Arbitral y por la Comisión Plenaria (2014-2025) para la resolución de casos concretos elevados ante las distintas jurisdicciones tributarias del país, en el marco del Convenio Multilateral sobre el Impuesto sobre los Ingresos Brutos.
+- **Formato CSV**: El archivo generado ("Comma Separated Values", editable utilizando MS Excel o LibreOffice Calc) incluye una columna `Path_Nombre_Archivo` con una fórmula de hipervínculo optimizada para entornos locales:
 `=HYPERLINK("C:\Users\vn\Desktop\resoluciones\archivo.pdf"; "archivo.pdf")`
+
+  > **Nota de compatibilidad e instrucciones**:
+  > 1. Para que esta fórmula funcione correctamente en versiones de **MS Excel** o **LibreOffice Calc** configuradas en español, el comando `HYPERLINK` debe ser traducido a su equivalente: `=HIPERVINCULO(...)`. En versiones antiguas de LibreOffice/OpenOffice Calc en español, el comando estándar ha sido siempre `HIPERVINCULO`.
+  > 2. **Conversión de formato**: El archivo CSV descargado debe ser guardado/convertido previamente a formato **.xlsx** (Excel) o formato nativo de Calc, para que las fórmulas se activen correctamente.
+  > 3. **Ruta de archivos**: Es imprescindible adecuar el argumento de la función para que incluya el **path completo** de la ubicación real en disco donde el usuario tiene almacenados los documentos. Sin la ruta absoluta correcta, el vínculo no podrá abrir el archivo. Cuidado al separador de argumentos utilizado por Excel o Calc:  ";"  o  "," .
 
 Además, el CSV desglosa ambos tipos de conteos (Sin Contexto y Con Contexto) por cada término de búsqueda, manteniendo la paridad absoluta con las estadísticas mostradas en pantalla.
 
@@ -94,6 +104,10 @@ Además, el CSV desglosa ambos tipos de conteos (Sin Contexto y Con Contexto) po
 - **Exportación**:
   - jspdf para informes PDF.
   - docx para informes Word.
+
+## 👤 Autor
+
+Este proyecto ha sido desarrollado por Vincenzo Natale. A vuestra disposición en: vnatale52@gmail.com
 
 ## 📄 Licencia
 

@@ -83,7 +83,7 @@ const App: React.FC = () => {
             <div>
               <h1 className="text-xl font-extrabold tracking-tight">DocSearch <span className="text-indigo-600">Pro</span></h1>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">
-                Intelligence Engine v4.0 <span className="ml-6 normal-case font-medium opacity-80">Desarrollado por Vincenzo Natale &nbsp;&nbsp; vnatale52@gmail.com</span>
+                Intelligence Engine v4.1 <span className="ml-6 normal-case font-medium opacity-80">Desarrollado por Vincenzo Natale &nbsp;&nbsp; vnatale52@gmail.com</span>
               </p>
             </div>
           </div>
@@ -99,10 +99,10 @@ const App: React.FC = () => {
               title="Descargar README.md"
             >
               <HelpCircle className="w-4 h-4 text-indigo-500" />
-              <span className="hidden sm:inline">Descargar Readme.md</span>
+              <span className="hidden sm:inline">Descargar README.md</span>
             </a>
             <a 
-              href="/Descargar archivo de ejemplo.pdf"
+              href="/Descargar%20archivo%20de%20ejemplo.pdf"
               download="Descargar archivo de ejemplo.pdf"
               className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all text-[11px] font-bold border ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm'}`}
               title="Descargar archivo de ejemplo.pdf"

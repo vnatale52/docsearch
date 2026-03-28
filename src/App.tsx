@@ -7,7 +7,7 @@ import ResultsTable from './components/ResultsTable';
 import StatsOverview from './components/StatsOverview';
 import RegexHelper from './components/RegexHelper';
 import { processFiles } from './services/fileProcessor';
-import { exportToCSV, exportToPDF, exportToDocx, exportErrorReport } from './services/exportService';
+import { exportToCSV, exportToPDF, exportToDocx, exportErrorReport, exportReadmeToPDF } from './services/exportService';
 
 const App: React.FC = () => {
   const [files, setFiles] = useState<FileData[]>([]);
@@ -92,15 +92,14 @@ const App: React.FC = () => {
               <Clock className="w-3.5 h-3.5 text-indigo-500" />
               {currentTime}
             </div>
-            <a 
-              href="/README.md"
-              download="README.md"
+            <button 
+              onClick={exportReadmeToPDF}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all text-[11px] font-bold border ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm'}`}
-              title="Descargar README.md"
+              title="Descargar README en formato PDF"
             >
               <HelpCircle className="w-4 h-4 text-indigo-500" />
-              <span className="hidden sm:inline">Descargar README.md</span>
-            </a>
+              <span className="hidden sm:inline">Descargar README (PDF)</span>
+            </button>
             <a 
               href="/Descargar%20archivo%20de%20ejemplo.pdf"
               download="Descargar archivo de ejemplo.pdf"

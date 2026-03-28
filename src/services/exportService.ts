@@ -391,3 +391,96 @@ export const exportToDocx = async (files: FileData[], stats: SearchStats) => {
     document.body.removeChild(link);
   });
 };
+
+export const exportReadmeToPDF = async () => {
+  try {
+    const response = await fetch('/README.md');
+    if (!response.ok) throw new Error("Could not fetch README");
+    const text = await response.text();
+    
+    const doc = new jsPDF();
+    const margin = 20;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const maxLineWidth = pageWidth - margin * 2;
+    
+    let y = 20;
+
+    const lines = text.split('\n');
+
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i].replace(/\r/g, '');
+        if (line.trim() === '') {
+           y += 3;
+           continue;
+        }
+
+        let fontSize = 10;
+        let fontStyle = "normal";
+        let textColor: [number, number, number] = [0, 0, 0];
+        let offsetLeft = 0;
+
+        if (line.startsWith('# ')) {
+            fontSize = 18;
+            fontStyle = "bold";
+            textColor = [30, 58, 138];
+            line = line.substring(2);
+            y += 8;
+        } else if (line.startsWith('## ')) {
+            fontSize = 14;
+            fontStyle = "bold";
+            textColor = [30, 64, 175];
+            line = line.substring(3);
+            y += 6;
+        } else if (line.startsWith('### ')) {
+            fontSize = 12;
+            fontStyle = "bold";
+            textColor = [55, 65, 81];
+            line = line.substring(4);
+            y += 4;
+        } else if (line.startsWith('- ')) {
+            line = '• ' + line.substring(2);
+            offsetLeft = 5;
+        } else if (line.match(/^\d+\.\s/)) {
+            offsetLeft = 5;
+        } else if (line.startsWith('> ')) {
+            line = '  | ' + line.substring(2);
+            textColor = [107, 114, 128];
+            fontStyle = "italic";
+        }
+
+        line = line.replace(/\*\*(.*?)\*\*/g, '$1'); 
+        line = line.replace(/\*(.*?)\*/g, '$1');
+        line = line.replace(/`(.*?)`/g, '$1');
+
+        line = line.replace(/[\u201C\u201D]/g, '"');
+        line = line.replace(/[\u2018\u2019]/g, "'");
+        line = line.replace(/[\u2013\u2014]/g, "-");
+        line = line.replace(/[^\x00-\xFF]/g, '').trim();
+
+        if (line === '') continue;
+
+        doc.setFontSize(fontSize);
+        doc.setFont("helvetica", fontStyle);
+        doc.setTextColor(textColor[0], textColor[1], textColor[2]);
+
+        const splitLines = doc.splitTextToSize(line, maxLineWidth - offsetLeft);
+        
+        splitLines.forEach((splitLine: string) => {
+            if (y > pageHeight - margin) {
+                doc.addPage();
+                y = 20;
+            }
+            doc.text(splitLine, margin + offsetLeft, y);
+            y += (fontSize / 2) + 1;
+        });
+        
+        y += 2;
+    }
+
+    doc.save('README_DocSearch_Pro.pdf');
+  } catch (err) {
+    console.error("Error generating README PDF", err);
+    alert("Hubo un error al generar el PDF del README.");
+  }
+};

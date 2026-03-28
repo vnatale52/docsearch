@@ -11,6 +11,7 @@ DocSearch Pro es una herramienta avanzada de búsqueda y análisis de documentos
 - **Exportación Profesional**: Generación de informes detallados en formatos PDF, Word (Docx) y CSV (Excel) con absoluta consistencia de datos.
 - **Interfaz Moderna**: Diseño limpio con soporte para Modo Oscuro y visualización de estadísticas en tiempo real.
 - **OCR Integrado**: Capacidad de procesar PDFs escaneados mediante reconocimiento óptico de caracteres (ver Limitaciones del OCR).
+- **Manual Dinámico**: Conversión automática de este mismo documento a formato PDF de fácil lectura, al hacer clic en 'Descargar README'.
 
 ## 🔍 Uso de Expresiones Regulares (REGEX)
 
@@ -49,7 +50,7 @@ El Reconocimiento Óptico de Caracteres (OCR) es una tecnología potente pero de
 
 Para documentos cuyo contenido alterne entre texto  y no texto (imágenes, gráficos, tablas, cuadros escaneados pegados, insertados, encrustados o embebidos en medio del contenido que - sí - es texto), es decir, el mismo documento contiene, ambos formatos (texto y no texto), para estos casos es muy recomendable que el usuario realice, previamente, una "mini prueba" de búsqueda de términos, de manera tal, de testear la respuesta de la aplicación, para determinar si ésta produce realmente el resultado esperado. 
 
-Por otro lado, esta aplicación corre en un server (Render.com), utilizando una cuenta gratuita, que sólo permite el uso de una cantidad mínima de recursos de hardware, lo cual, hace que para OCR (que es "hardware intensive") el server pueda llegar a producir resultados erráticos. No obstante ello, atendiendo al nivel de pruebas realizadas, la utilización del reconocimiento OCR ha sido satisfactorio.
+Por otro lado, esta aplicación corre en un server (Render.com), utilizando una cuenta gratuita, que sólo permite el uso de una cierta cantidad mínima de recursos de hardware, lo cual, hace que para OCR (que es "hardware intensive") el server pueda llegar a producir resultados erráticos. No obstante ello, atendiendo al nivel de pruebas realizadas, la utilización del reconocimiento OCR ha sido satisfactorio.
 
 
 ## 🛡️ Tratamiento de Logos y Ruido

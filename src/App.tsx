@@ -110,7 +110,7 @@ const App: React.FC = () => {
               <span className="hidden sm:inline">Descargar archivo de ejemplo.pdf</span>
             </a>
             <a 
-              href="https://github.com/vnatale52/docsearch/raw/main/resoluciones/resolucionesCA_CP_desde_01-2014a12-2025.zip"
+              href="https://github.com/vnatale52/docsearch/raw/main/resoluciones/resolucionesCA_CP_desde_01-2014a03-2026.zip"
               className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all text-[11px] font-bold border ${isDarkMode ? 'bg-indigo-900/40 border-indigo-800 text-indigo-300 hover:bg-indigo-900/60' : 'bg-indigo-50 border-indigo-100 text-indigo-600 hover:bg-indigo-100 shadow-sm'}`}
               title="Descargar Resoluciones sobre casos concretos - emitidas desde 01-2014 a 03-2026 - por la Comisión Arbitral y la Comisión Plenaria del Convenio Multilateral - en el Impuesto sobre los Ingresos Brutos"
             >
